@@ -1,0 +1,3638 @@
+  <!DOCTYPE html>  <html lang="es">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<meta name="theme-color" content="#101116">
+<meta name="description" content="Rubenca DMX Tools - Fixture Library & DMX Patch Manager">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="icon" href="./assets/icons/icon.svg" type="image/svg+xml">  
+<title>Rubenca DMX Tools</title>  <style>     
+:root {  
+  --bg:#101116;  
+  --panel:#191b23;  
+  --panel2:#222530;  
+  --border:#303440;  
+  --text:#f2f3f7;  
+  --muted:#969baa;  
+  --accent:#36a6d9;  
+  --green:#42c98a;  
+  --red:#f06464;  
+}  
+* {box-sizing:border-box}  
+body {  
+  margin:0;padding:16px;background:var(--bg);  
+  color:var(--text);font-family:Arial,sans-serif;  
+}  
+.container {max-width:850px;margin:auto}  
+header {  
+  padding:12px 0 22px;border-bottom:1px solid var(--border);  
+  margin-bottom:20px;  
+}  
+.brand {  
+  color:var(--accent);font-size:12px;font-weight:bold;  
+  letter-spacing:2px;  
+}  
+h1 {margin:7px 0 4px;font-size:26px}  
+.subtitle {color:var(--muted);font-size:13px}  
+.section {  
+  background:var(--panel);border:1px solid var(--border);  
+  border-radius:12px;padding:17px;margin-bottom:16px;  
+}  
+.section-title {  
+  font-size:14px;font-weight:bold;color:var(--accent);  
+  margin-bottom:15px;  
+}  
+/* ========================================
+   MENUS DESPLEGABLES
+======================================== */
+
+.section {
+  padding:0;
+  overflow:hidden;
+}
+
+.section-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:17px;
+  cursor:pointer;
+  list-style:none;
+  user-select:none;
+}
+
+.section-header::-webkit-details-marker {
+  display:none;
+}
+
+.section-header .section-title {
+  margin:0;
+}
+
+.section-icon {
+  color:var(--accent);
+  font-size:22px;
+  font-weight:bold;
+}
+
+.section-icon::before {
+  content:"+";
+}
+
+details.section[open] > summary .section-icon::before {
+  content:"−" !important;
+}
+
+.section-content {
+  padding:0 17px 17px;
+}
+
+label {  
+  display:block;color:var(--muted);font-size:12px;  
+  margin:12px 0 6px;  
+}  
+input,select {  
+  width:100%;padding:12px;background:var(--panel2);  
+  border:1px solid var(--border);border-radius:8px;  
+  color:var(--text);font-size:15px;outline:none;  
+}  
+input:focus,select:focus {border-color:var(--accent)}  
+button {  
+  border:0;border-radius:8px;padding:12px 14px;  
+  background:var(--accent);color:white;  
+  font-size:13px;font-weight:bold;cursor:pointer;  
+  margin-top:12px;  
+}  
+button.secondary {  
+  background:var(--panel2);border:1px solid var(--border);  
+  color:var(--text);  
+}  
+button.danger {  
+  background:#49272b;color:#ffaaaa;  
+  border:1px solid #71343b;  
+}  
+button.small {padding:8px 10px;font-size:11px;margin:7px 4px 0 0}  
+button.full {width:100%}  
+.grid {display:grid;grid-template-columns:1fr 1fr;gap:10px}  
+.message {font-size:12px;margin-top:10px;line-height:1.5}  
+.success {color:var(--green)}  
+.error {color:var(--red)}  
+.fixture-card,.patch-card {  
+  background:var(--panel2);border:1px solid var(--border);  
+  border-radius:9px;padding:12px;margin-top:10px;  
+}  
+.fixture-name,.patch-name {font-weight:bold;font-size:14px}  
+.fixture-detail,.patch-detail {  
+  color:var(--muted);font-size:12px;margin-top:5px;line-height:1.6;  
+}  
+.mode-tag {  
+  display:inline-block;background:#303b4b;color:#9edcff;  
+  border-radius:5px;padding:4px 7px;font-size:11px;margin:5px 4px 0 0;  
+}  
+.stat-grid {display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}  
+.stat {  
+  background:var(--panel2);border:1px solid var(--border);  
+  border-radius:9px;padding:12px;  
+}  
+.stat-label {color:var(--muted);font-size:11px}  
+.stat-value {font-size:20px;font-weight:bold;margin-top:5px}  
+.empty {color:var(--muted);font-size:13px;padding:15px 0}  
+footer {text-align:center;color:var(--muted);font-size:11px;padding:20px 0}  
+@media(max-width:480px) {  
+  body {padding:12px}  
+  .grid {grid-template-columns:1fr}  
+  h1 {font-size:23px}  
+}  
+
+/* ========================================
+   LX MANAGER · DISEÑO ORGANIZADO
+======================================== */
+
+.lx-card {
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:15px;
+  margin-top:14px;
+}
+
+.lx-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  flex-wrap:wrap;
+  padding-bottom:13px;
+  border-bottom:1px solid var(--border);
+}
+
+.lx-title {
+  margin:0;
+  font-size:20px;
+  color:var(--text);
+}
+
+.lx-subtitle {
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+}
+
+.lx-actions {
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.lx-actions button {
+  margin:0;
+}
+
+.lx-summary-grid {
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-top:14px;
+}
+
+.lx-metric {
+  min-width:0;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:11px;
+}
+
+.lx-metric-label {
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.4;
+  text-transform:uppercase;
+  letter-spacing:.4px;
+}
+
+.lx-metric-value {
+  font-size:19px;
+  font-weight:bold;
+  margin-top:6px;
+  overflow-wrap:anywhere;
+}
+
+.lx-metric-unit {
+  color:var(--muted);
+  font-size:11px;
+  font-weight:normal;
+  margin-left:3px;
+}
+
+.lx-config {
+  margin-top:14px;
+  padding:13px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:9px;
+}
+
+.lx-config-title,
+.lx-lines-heading {
+  color:var(--accent);
+  font-size:12px;
+  font-weight:bold;
+  letter-spacing:.5px;
+  margin:0 0 10px;
+}
+
+.lx-config-row {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 110px;
+  align-items:center;
+  gap:12px;
+}
+
+.lx-config-row label {
+  margin:0;
+}
+
+.lx-config-row input {
+  margin:0;
+}
+
+.lx-capacity-info {
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.6;
+  margin-top:10px;
+}
+
+.lx-warning {
+  margin-top:12px;
+  padding:11px 12px;
+  border:1px solid #765b27;
+  background:#3a301d;
+  color:#f5d58a;
+  border-radius:8px;
+  font-size:12px;
+  line-height:1.5;
+}
+
+.lx-lines-heading {
+  margin-top:18px;
+  margin-bottom:10px;
+}
+
+.lx-line-card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:12px;
+  margin-top:9px;
+}
+
+.lx-line-card.overloaded {
+  border-color:#a64242;
+}
+
+.lx-line-card.pending {
+  border-style:dashed;
+  border-color:#765b27;
+}
+
+.lx-line-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.lx-line-title {
+  font-size:14px;
+  font-weight:bold;
+}
+
+.lx-line-consumption {
+  font-size:14px;
+  font-weight:bold;
+  font-variant-numeric:tabular-nums;
+}
+
+.lx-line-status {
+  display:inline-block;
+  border-radius:5px;
+  padding:4px 7px;
+  background:#203b30;
+  color:#75e0ad;
+  font-size:9px;
+  font-weight:bold;
+  letter-spacing:.4px;
+}
+
+.lx-line-status.warning {
+  background:#44391e;
+  color:#f3d16f;
+}
+
+.lx-line-status.danger {
+  background:#49272b;
+  color:#ffaaaa;
+}
+
+.lx-progress-track {
+  height:7px;
+  background:#303440;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:11px;
+}
+
+.lx-progress-fill {
+  height:100%;
+  border-radius:10px;
+  transition:width .2s ease;
+}
+
+.lx-line-details {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:10px;
+}
+
+.lx-line-detail {
+  min-width:0;
+  background:var(--panel2);
+  border-radius:7px;
+  padding:8px;
+}
+
+.lx-line-detail-label {
+  color:var(--muted);
+  font-size:10px;
+}
+
+.lx-line-detail-value {
+  font-size:12px;
+  font-weight:bold;
+  margin-top:4px;
+  overflow-wrap:anywhere;
+}
+
+.lx-fixture-row {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(115px,150px);
+  align-items:center;
+  gap:10px;
+  padding:10px 0;
+  border-top:1px solid var(--border);
+}
+
+.lx-fixture-row:first-of-type {
+  margin-top:10px;
+}
+
+.lx-fixture-info {
+  min-width:0;
+}
+
+.lx-fixture-name {
+  font-size:13px;
+  font-weight:bold;
+  overflow-wrap:anywhere;
+}
+
+.lx-fixture-sub {
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.5;
+  margin-top:4px;
+}
+
+.lx-fixture-info button {
+  margin-top:5px;
+}
+
+.lx-line-select {
+  width:100%;
+  min-width:0;
+  padding:9px 7px;
+  font-size:12px;
+}
+
+.lx-empty {
+  color:var(--muted);
+  font-size:13px;
+  padding:15px 12px;
+  background:var(--panel2);
+  border:1px dashed var(--border);
+  border-radius:9px;
+}
+
+@media(max-width:620px) {
+  .lx-summary-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+  .lx-header {
+    display:block;
+  }
+  .lx-actions {
+    margin-top:10px;
+  }
+  .lx-actions button {
+    flex:1 1 auto;
+  }
+}
+
+@media(max-width:380px) {
+  .lx-line-details {
+    grid-template-columns:1fr;
+  }
+  .lx-fixture-row {
+    grid-template-columns:1fr;
+  }
+}
+
+
+
+/* ========================================
+   SISTEMA VISUAL GLOBAL · DMX TOOLS
+   Unifica todos los apartados con LX Manager
+======================================== */
+:root {
+  --bg:#0d0f14;
+  --panel:#171a22;
+  --panel2:#202430;
+  --border:#303746;
+  --text:#f3f5f9;
+  --muted:#9ba4b5;
+  --accent:#42b5e8;
+  --green:#45d39a;
+  --red:#f16f78;
+  --amber:#efc66e;
+}
+body {
+  background:
+    radial-gradient(ellipse at 50% -15%, rgba(66,181,232,.09), transparent 48%),
+    var(--bg);
+  line-height:1.45;
+}
+.container {max-width:900px}
+header {
+  padding:17px 0 23px;
+  border-bottom:1px solid rgba(66,181,232,.24);
+  margin-bottom:22px;
+}
+.brand {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:var(--accent);
+  font-size:11px;
+  letter-spacing:2.2px;
+}
+.brand::before {
+  content:"";
+  width:7px;height:7px;border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 0 12px rgba(66,181,232,.7);
+}
+h1 {font-size:29px;letter-spacing:-.6px;margin-top:9px}
+.subtitle {font-size:12px;letter-spacing:.2px}
+
+/* Apartados principales */
+.section {
+  background:linear-gradient(145deg,rgba(27,31,41,.98),rgba(21,24,32,.98));
+  border:1px solid #303746;
+  border-radius:14px;
+  box-shadow:0 7px 22px rgba(0,0,0,.13);
+  margin-bottom:13px;
+}
+.section-header {
+  min-height:58px;
+  padding:17px 19px;
+  transition:background .18s ease;
+}
+.section-header:hover {background:rgba(66,181,232,.045)}
+.section-header .section-title {
+  display:flex;
+  align-items:center;
+  gap:11px;
+  color:#e9edf5;
+  font-size:12px;
+  letter-spacing:.65px;
+}
+.section-header .section-title::before {
+  content:"";
+  width:3px;height:19px;
+  border-radius:4px;
+  background:var(--accent);
+  box-shadow:0 0 10px rgba(66,181,232,.25);
+}
+.section-icon {font-size:20px;line-height:1}
+.section-content {padding:3px 19px 19px}
+.section-content > label:first-child {margin-top:8px}
+
+/* Campos */
+label {
+  color:#b1bac9;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.35px;
+  margin:16px 0 7px;
+}
+input,select {
+  min-height:43px;
+  padding:11px 13px;
+  background:#11151d;
+  border:1px solid #343d4c;
+  border-radius:9px;
+  font-size:13px;
+  transition:border-color .18s,box-shadow .18s,background .18s;
+}
+input:hover,select:hover {border-color:#4b596d}
+input:focus,select:focus {
+  border-color:var(--accent);
+  background:#131a23;
+  box-shadow:0 0 0 3px rgba(66,181,232,.11);
+}
+input::placeholder {color:#687386}
+
+/* Botones */
+button {
+  min-height:39px;
+  padding:10px 14px;
+  border-radius:9px;
+  background:linear-gradient(135deg,#279dce,#2388b7);
+  box-shadow:0 3px 10px rgba(20,135,185,.13);
+  font-size:11px;
+  letter-spacing:.35px;
+  transition:transform .15s,filter .15s,border-color .15s;
+}
+button:hover {filter:brightness(1.12);transform:translateY(-1px)}
+button:active {transform:translateY(0)}
+button.secondary {
+  background:#252b37;
+  border:1px solid #3b4555;
+  color:#dce3ee;
+  box-shadow:none;
+}
+button.danger {
+  background:#39252b;
+  border:1px solid #70404a;
+  color:#ffb2b8;
+  box-shadow:none;
+}
+button.small {min-height:31px;padding:7px 10px;font-size:10px}
+button.full {width:100%;margin-top:15px}
+.grid {gap:11px}
+
+/* Biblioteca y patch */
+.fixture-card,.patch-card {
+  position:relative;
+  background:linear-gradient(145deg,#222936,#1b202a);
+  border:1px solid #343e4d;
+  border-radius:11px;
+  padding:14px;
+  margin-top:11px;
+  overflow:hidden;
+}
+.fixture-card::before,.patch-card::before {
+  content:"";
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+  background:rgba(66,181,232,.75);
+}
+.fixture-name,.patch-name {
+  color:#f2f5fa;
+  font-size:14px;
+  line-height:1.45;
+  letter-spacing:.1px;
+}
+.fixture-detail,.patch-detail {
+  color:#a8b2c2;
+  font-size:11px;
+  line-height:1.65;
+  margin-top:7px;
+}
+.mode-tag {
+  background:#1a3547;
+  border:1px solid #28516a;
+  color:#9cddfa;
+  border-radius:6px;
+  padding:5px 8px;
+  font-size:10px;
+  font-weight:700;
+  margin:8px 5px 0 0;
+}
+
+/* Datos y estadísticas */
+.stat-grid {gap:10px;margin:14px 0}
+.stat {
+  background:linear-gradient(145deg,#222936,#1b202a);
+  border:1px solid #343e4d;
+  border-radius:11px;
+  padding:14px;
+}
+.stat-label {
+  color:#9da9bb;
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.55px;
+}
+.stat-value {
+  color:#f5f7fb;
+  font-size:25px;
+  font-weight:800;
+  margin-top:5px;
+  font-variant-numeric:tabular-nums;
+}
+#projectPreview {
+  background:#151c26;
+  border:1px solid #344657;
+  border-radius:8px;
+  color:#9edcf7;
+  padding:10px 12px;
+  margin-top:13px;
+  font-weight:700;
+}
+#patchList > .section-title {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  color:var(--accent);
+  font-size:12px;
+  letter-spacing:.7px;
+  margin:21px 0 7px !important;
+}
+#patchList > .section-title::after {
+  content:"";height:1px;flex:1;background:#303b4a;
+}
+#patchList .patch-card {margin-top:8px}
+#patchList .patch-card button {margin-top:10px}
+
+/* Mensajes, vacíos y separadores */
+.message {font-size:11px;line-height:1.55;padding:0 2px}
+.message:empty {display:none}
+.success {color:var(--green)}
+.error {color:var(--red)}
+.empty {
+  color:#a5afbf;
+  font-size:12px;
+  padding:17px;
+  margin-top:12px;
+  background:#171c25;
+  border:1px dashed #394455;
+  border-radius:10px;
+  text-align:center;
+}
+
+/* Datos de proyecto: tarjeta independiente */
+.section-content > .fixture-card:first-child {
+  margin-top:9px;
+  padding:15px;
+}
+.section-content > .fixture-card:first-child > .section-title {
+  color:var(--accent);
+  font-size:11px;
+  letter-spacing:.7px;
+  margin-bottom:13px;
+}
+
+@media(max-width:620px) {
+  body {padding:11px}
+  .section-header {padding:15px}
+  .section-content {padding:2px 14px 15px}
+  h1 {font-size:25px}
+  .stat-value {font-size:22px}
+}
+@media(max-width:380px) {
+  .section-header .section-title {font-size:10px}
+  .grid {grid-template-columns:1fr}
+}
+
+</style>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.4/jspdf.plugin.autotable.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if (window.pdfjsLib) { pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; }</script>
+
+</head>
+<body><div class="container">  <header>  
+  <div class="brand">RUBENCA AUDIOVISUALS</div>  
+  <h1>DMX Tools</h1>  
+  <div class="subtitle">DMX Fixture Library & Patch Manager · v.1</div>  
+</header>  <div class="section">  
+<!-- 01 · CREAR APARATO -->
+<details class="section" name="main-panels">
+  <summary class="section-header">
+    <span class="section-title">01 · CREAR APARATO</span>
+    <span class="section-icon"></span>
+  </summary>
+  <div class="section-content">
+
+    <label>Fabricante</label>
+    <input id="brandInput" placeholder="Ej. Chauvet, Robe, Martin...">
+
+    <label>Nombre del aparato</label>
+    <input id="nameInput" placeholder="Ej. LED Moving Head">
+
+    <label>Nombre del modo</label>
+    <input id="modeInput" placeholder="Ej. Standard, Extended...">
+
+    <label>Número de canales DMX</label>
+    <input id="channelsInput" type="number" min="1" max="512" placeholder="Ej. 24">
+
+    <label>Consumo eléctrico (W) · Opcional</label>
+    <input id="powerInput" type="number" min="0" step="1" placeholder="Ej. 450 (déjalo vacío si no lo sabes)">
+
+    <button class="full" onclick="createFixture()">GUARDAR APARATO</button>
+    <div id="createMessage" class="message"></div>
+
+  </div>
+</details>
+
+<!-- 02 · AÑADIR MODO -->
+<details class="section" name="main-panels">
+  <summary class="section-header">
+    <span class="section-title">02 · AÑADIR MODO A UN APARATO</span>
+    <span class="section-icon"></span>
+  </summary>
+  <div class="section-content">
+
+    <label>Seleccionar aparato</label>
+    <select id="modeFixture"></select>
+
+    <label>Nombre del nuevo modo</label>
+    <input id="newModeName" placeholder="Ej. Basic, Extended...">
+
+    <label>Número de canales</label>
+    <input id="newModeChannels" type="number" min="1" max="512" placeholder="Ej. 32">
+
+    <button class="full" onclick="addMode()">AÑADIR MODO</button>
+    <div id="modeMessage" class="message"></div>
+
+  </div>
+</details>
+
+<!-- 03 · MI BIBLIOTECA -->
+<details class="section" name="main-panels">
+  <summary class="section-header">
+    <span class="section-title">03 · MI BIBLIOTECA</span>
+    <span class="section-icon"></span>
+  </summary>
+  <div class="section-content">
+
+    <div id="libraryMessage" class="message"></div>
+
+    <div class="grid">
+      <button onclick="exportLibrary()">EXPORTAR BIBLIOTECA</button>
+      <button class="secondary" onclick="document.getElementById('importLibraryFile').click()">IMPORTAR BIBLIOTECA</button>
+    </div>
+
+    <input type="file" id="importLibraryFile" accept=".json,application/json" style="display:none" onchange="importLibrary(event)">
+
+    <button class="full secondary" onclick="replaceLibrary()">REEMPLAZAR BIBLIOTECA</button>
+
+    <div id="libraryList"></div>
+
+  </div>
+</details>
+
+<!-- 04 · CREAR PATCH DMX -->
+<details class="section" name="main-panels">
+  <summary class="section-header">
+    <span class="section-title">04 · CREAR PATCH DMX</span>
+    <span class="section-icon"></span>
+  </summary>
+  <div class="section-content">
+
+    <label>Aparato</label>
+    <select id="patchFixture" onchange="updateModes()"></select>
+
+    <label>Modo DMX</label>
+    <select id="patchMode"></select>
+
+    <div class="grid">
+      <div>
+        <label>Cantidad de aparatos</label>
+        <input id="quantityInput" type="number" min="1" value="1">
+      </div>
+      <div>
+        <label>Universo inicial</label>
+        <input id="universeInput" type="number" min="1" value="1">
+      </div>
+    </div>
+
+    <label>Dirección DMX inicial</label>
+    <input id="addressInput" type="number" min="1" max="512" value="1">
+
+    <label>Línea eléctrica (LX)</label>
+    <input id="lxInput" type="text" placeholder="Ej. LX 1, Front, Back..." list="lxSuggestions">
+
+    <datalist id="lxSuggestions"></datalist>
+
+    <button class="full" onclick="addToPatch()">AÑADIR AL PATCH</button>
+    <div id="patchMessage" class="message"></div> 
+
+  </div>
+</details>
+
+<!-- 05 · RESUMEN DEL PATCH -->
+<details class="section" name="main-panels">
+  <summary class="section-header">
+    <span class="section-title">05 · RESUMEN DEL PATCH</span>
+    <span class="section-icon"></span>
+  </summary>
+  <div class="section-content">
+
+    <!-- DATOS DEL PROYECTO -->
+    <div class="fixture-card project-info-card">
+
+      <div class="section-title">DATOS DEL PROYECTO</div>
+
+      <label>Nombre del proyecto</label>
+      <input
+        id="projectNameInput"
+        type="text"
+        placeholder="Ej. Aquasella 2027"
+        oninput="updateProjectInfo()"
+      >
+
+      <label>Versión</label>
+      <input
+        id="projectVersionInput"
+        type="text"
+        placeholder="Ej. 1"
+        oninput="updateProjectInfo()"
+      >
+
+      <div class="fixture-detail" id="projectPreview">
+        Patch · Sin nombre · v.1
+      </div>
+
+    </div>
+
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-label">APARATOS</div>
+        <div class="stat-value" id="totalFixtures">0</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">UNIVERSOS UTILIZADOS</div>
+        <div class="stat-value" id="totalUniverses">0</div>
+      </div>
+    </div>
+
+    <div id="patchList"></div>
+
+<div class="grid">
+<button class="secondary" onclick="exportPatch()">EXPORTAR PATCH</button>
+
+  <button class="secondary" onclick="document.getElementById('importPatchFile').click()">
+    IMPORTAR PATCH
+  </button>
+</div>
+
+<input
+  type="file"
+  id="importPatchFile"
+  accept=".json,application/json"
+  style="display:none"
+  onchange="importPatch(event)"
+>
+
+
+<button class="full" onclick="exportPDF()">EXPORTAR PDF</button>
+
+<button
+  class="full secondary"
+  onclick="document.getElementById('recoverProjectPDF').click()"
+>
+  RECUPERAR PROYECTO DESDE PDF
+</button>
+
+<input
+  type="file"
+  id="recoverProjectPDF"
+  accept=".pdf,application/pdf"
+  style="display:none"
+  onchange="recoverProjectFromPDF(event)"
+>
+
+<button class="full danger" onclick="clearPatch()">BORRAR PATCH</button>
+
+<div id="exportMessage" class="message"></div>
+
+  </div>
+</details>
+
+<!-- 06 · LX MANAGER -->
+<details class="section" name="main-panels">
+  <summary class="section-header">
+    <span class="section-title">06 · LX MANAGER</span>
+    <span class="section-icon"></span>
+  </summary>
+  <div class="section-content">
+
+    <div id="lxManagerMessage" class="message"></div>
+
+    <button class="full secondary" onclick="updatePatchPower()">
+      ACTUALIZAR CONSUMOS DESDE BIBLIOTECA
+    </button>
+
+    <div id="lxManagerContent"></div>
+
+  </div>
+</details></div>  <script>  
+"use strict";  
+  
+// ========================================  
+// ALMACENAMIENTO  
+// ========================================  
+  
+const LIBRARY_KEY = "rubencaDMXlibrary";
+const PATCH_KEY = "rubencaDMXpatch";
+const POWER_KEY = "rubencaDMXpower";
+const PROJECT_KEY = "rubencaDMXproject";
+
+function loadData(key, fallback) {
+  try {
+    const saved = localStorage.getItem(key);
+    return saved ? JSON.parse(saved) : fallback;
+  } catch(e) {
+    return fallback;
+  }
+}
+
+let library = loadData(LIBRARY_KEY, []);
+let patches = loadData(PATCH_KEY, []);
+let lxPowerSettings = loadData(POWER_KEY, {});
+let projectInfo = loadData(PROJECT_KEY, {
+  name: "",
+  version: "1"
+});
+
+if (!projectInfo || typeof projectInfo !== "object" || Array.isArray(projectInfo)) {
+  projectInfo = { name: "", version: "1" };
+}
+
+projectInfo.name = typeof projectInfo.name === "string"
+  ? projectInfo.name
+  : "";
+
+projectInfo.version = projectInfo.version != null
+  ? String(projectInfo.version)
+  : "1";
+if (
+  !lxPowerSettings ||
+  typeof lxPowerSettings !== "object" ||
+  Array.isArray(lxPowerSettings)
+) {
+  lxPowerSettings = {};
+}
+  
+if (!Array.isArray(library)) library = [];  
+if (!Array.isArray(patches)) patches = [];  
+  
+function saveData() {
+  localStorage.setItem(LIBRARY_KEY, JSON.stringify(library));
+  localStorage.setItem(PATCH_KEY, JSON.stringify(patches));
+  localStorage.setItem(POWER_KEY, JSON.stringify(lxPowerSettings));
+  localStorage.setItem(PROJECT_KEY, JSON.stringify(projectInfo));
+}
+  
+function getProjectTitle() {
+  const name = (projectInfo.name || "").trim();
+  const version = (projectInfo.version || "").trim() || "1";
+
+  return "Patch " + (name || "Sin nombre") + " v." + version;
+}
+
+
+function updateProjectInfo() {
+  projectInfo.name = document.getElementById("projectNameInput").value;
+  projectInfo.version = document.getElementById("projectVersionInput").value;
+
+  document.getElementById("projectPreview").textContent = getProjectTitle();
+
+  saveData();
+}
+
+
+function renderProjectInfo() {
+  const nameInput = document.getElementById("projectNameInput");
+  const versionInput = document.getElementById("projectVersionInput");
+
+  if (!nameInput || !versionInput) return;
+
+  nameInput.value = projectInfo.name || "";
+  versionInput.value = projectInfo.version || "1";
+
+  document.getElementById("projectPreview").textContent = getProjectTitle();
+}
+
+function newId() {  
+  return Date.now().toString(36) +  
+    Math.random().toString(36).substring(2,9);  
+}  
+  
+function message(id,text,success=true) {  
+  const el=document.getElementById(id);  
+  el.textContent=text;  
+  el.className="message "+(success?"success":"error");  
+}  
+  
+// ========================================  
+// CREAR APARATO  
+// ========================================  
+  
+function createFixture() {  
+  const brand=document.getElementById("brandInput").value.trim();  
+  const name=document.getElementById("nameInput").value.trim();  
+  const modeName=document.getElementById("modeInput").value.trim();  
+  const channels=Number(document.getElementById("channelsInput").value);  
+  const powerValue = document.getElementById("powerInput").value.trim();
+  const powerW = powerValue === "" ? null : Number(powerValue);
+  
+  if(!name || !modeName || !Number.isInteger(channels) ||  
+     channels<1 || channels>512) {  
+    message("createMessage","Comprueba el nombre, el modo y el número de canales.",false);  
+    return;  
+  }  
+  
+  const exists=library.some(f =>  
+    f.name.toLowerCase()===name.toLowerCase() &&  
+    (f.brand||"").toLowerCase()===brand.toLowerCase()  
+  );  
+  
+  if(exists) {  
+    message("createMessage","Este aparato ya existe. Añade otro modo en el apartado 02.",false);  
+    return;  
+  }  
+  
+  library.push({  
+    id:newId(),  
+    brand:brand,  
+    name:name,
+    powerW: powerW,
+    modes:[{  
+      id:newId(),  
+      name:modeName,  
+      channels:channels 
+    }]  
+  });  
+  
+  saveData();  
+  renderLibrary();  
+  
+  document.getElementById("brandInput").value="";  
+  document.getElementById("nameInput").value="";  
+  document.getElementById("modeInput").value="";  
+  document.getElementById("channelsInput").value="";  
+  document.getElementById("powerInput").value="";
+  
+  message("createMessage","Aparato guardado correctamente.");  
+}  
+  
+// ========================================  
+// AÑADIR MODO  
+// ========================================  
+  
+function addMode() {  
+  const fixtureId=document.getElementById("modeFixture").value;  
+  const name=document.getElementById("newModeName").value.trim();  
+  const channels=Number(document.getElementById("newModeChannels").value);  
+  
+  const fixture=library.find(f=>f.id===fixtureId);  
+  
+  if(!fixture) {  
+    message("modeMessage","Selecciona un aparato.",false);  
+    return;  
+  }  
+  
+  if(!name || !Number.isInteger(channels) || channels<1 || channels>512) {  
+    message("modeMessage","Introduce un nombre y un número de canales válido.",false);  
+    return;  
+  }  
+  
+  const duplicate=fixture.modes.some(m =>  
+    m.name.toLowerCase()===name.toLowerCase() &&  
+    Number(m.channels)===channels  
+  );  
+  
+  if(duplicate) {  
+    message("modeMessage","Este modo ya existe en el aparato.",false);  
+    return;  
+  }  
+  
+  fixture.modes.push({  
+    id:newId(),  
+    name:name,  
+    channels:channels  
+  });  
+  
+  saveData();  
+  renderLibrary();  
+  
+  document.getElementById("newModeName").value="";  
+  document.getElementById("newModeChannels").value="";  
+  
+  message("modeMessage","Nuevo modo añadido correctamente.");  
+}  
+  
+// ========================================
+// EXPORTAR BIBLIOTECA JSON
+// ========================================
+
+function exportLibrary() {
+
+  if (library.length === 0) {
+    message("libraryMessage", "La biblioteca está vacía.", false);
+    return;
+  }
+
+  const data = {
+    app: "DMX Tools",
+    version: "1.0",
+    exportDate: new Date().toISOString(),
+    fixtures: library
+  };
+
+  const json = JSON.stringify(data, null, 2);
+
+  const blob = new Blob(
+    [json],
+    { type: "application/json;charset=utf-8" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "DMX_Library.json";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+  message("libraryMessage", "Biblioteca exportada correctamente.");
+}
+
+
+// ========================================
+// VALIDAR BIBLIOTECA IMPORTADA
+// ========================================
+
+function validateLibrary(data) {
+
+  if (!data || !Array.isArray(data.fixtures)) {
+    return false;
+  }
+
+  return data.fixtures.every(fixture =>
+    fixture &&
+    typeof fixture.name === "string" &&
+    typeof fixture.brand === "string" &&
+    Array.isArray(fixture.modes) &&
+    fixture.modes.length > 0 &&
+    fixture.modes.every(mode =>
+      mode &&
+      typeof mode.name === "string" &&
+      Number.isInteger(Number(mode.channels)) &&
+      Number(mode.channels) >= 1 &&
+      Number(mode.channels) <= 512
+    )
+  );
+}
+
+
+// ========================================
+// IMPORTAR Y COMBINAR BIBLIOTECA
+// ========================================
+
+function importLibrary(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+
+    try {
+
+      const data = JSON.parse(e.target.result);
+
+      if (!validateLibrary(data)) {
+        message(
+          "libraryMessage",
+          "El archivo no contiene una biblioteca válida.",
+          false
+        );
+        return;
+      }
+
+      let added = 0;
+      let skipped = 0;
+
+      data.fixtures.forEach(imported => {
+
+        const exists = library.some(f =>
+          f.name.toLowerCase() === imported.name.toLowerCase() &&
+          (f.brand || "").toLowerCase() === (imported.brand || "").toLowerCase()
+        );
+
+        if (exists) {
+          skipped++;
+          return;
+        }
+
+        const fixture = {
+          id: newId(),
+          brand: imported.brand || "",
+          name: imported.name.trim(),
+          modes: imported.modes.map(mode => ({
+            id: newId(),
+            name: mode.name.trim(),
+            channels: Number(mode.channels)
+          }))
+        };
+
+        library.push(fixture);
+        added++;
+
+      });
+
+      saveData();
+      renderLibrary();
+
+      message(
+        "libraryMessage",
+        "Importación completada: " + added +
+        " aparato(s) añadidos y " + skipped +
+        " duplicado(s) omitidos."
+      );
+
+    } catch(error) {
+
+      message(
+        "libraryMessage",
+        "No se ha podido leer el archivo JSON.",
+        false
+      );
+
+    }
+
+    event.target.value = "";
+
+  };
+
+  reader.readAsText(file);
+
+}
+
+// ========================================
+// REEMPLAZAR BIBLIOTECA COMPLETA
+// ========================================
+
+function replaceLibrary() {
+
+  const fileInput = document.getElementById("importLibraryFile");
+
+  fileInput.value = "";
+
+  fileInput.onchange = function(event) {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+
+      try {
+
+        const data = JSON.parse(e.target.result);
+
+        if (!validateLibrary(data)) {
+          message(
+            "libraryMessage",
+            "Archivo no válido. La biblioteca actual sigue intacta.",
+            false
+          );
+          return;
+        }
+
+        const accepted = confirm(
+          "¿ESTÁS SEGURO?\n\n" +
+          "Esta operación sustituirá toda tu biblioteca actual.\n\n" +
+          "Los focos actuales serán reemplazados por los del archivo seleccionado.\n\n" +
+          "¿Quieres continuar?"
+        );
+
+        if (!accepted) {
+          message(
+            "libraryMessage",
+            "Operación cancelada. Tu biblioteca sigue intacta.",
+            false
+          );
+          return;
+        }
+
+        library = data.fixtures.map(imported => ({
+          id: newId(),
+          brand: imported.brand || "",
+          name: imported.name.trim(),
+          modes: imported.modes.map(mode => ({
+            id: newId(),
+            name: mode.name.trim(),
+            channels: Number(mode.channels)
+          }))
+        }));
+
+        saveData();
+        renderLibrary();
+
+        message(
+          "libraryMessage",
+          "Biblioteca reemplazada correctamente. " +
+          library.length + " aparato(s) importados."
+        );
+
+      } catch(error) {
+
+        message(
+          "libraryMessage",
+          "Error al importar. Tu biblioteca actual sigue intacta.",
+          false
+        );
+
+      }
+
+      fileInput.value = "";
+      fileInput.onchange = null;
+
+    };
+
+    reader.readAsText(file);
+  };
+
+  fileInput.click();
+}
+
+// ========================================  
+// BBIBLIOTECA  
+// ========================================  
+  
+
+function renderLibrary() {
+  const list=document.getElementById("libraryList");
+  list.innerHTML="";
+
+  if(library.length===0) {
+    list.innerHTML='<div class="empty">Todavía no tienes aparatos guardados.</div>';
+  }
+
+  library.forEach(fixture=>{
+    const card=document.createElement("div");
+    card.className="fixture-card";
+
+    const title=document.createElement("div");
+    title.className="fixture-name";
+    title.textContent=fixture.brand
+      ? fixture.brand+" · "+fixture.name
+      : fixture.name;
+
+    const modes=document.createElement("div");
+    modes.className="fixture-detail";
+
+    fixture.modes.forEach(mode=>{
+      const tag=document.createElement("span");
+      tag.className="mode-tag";
+      tag.textContent=mode.name+" · "+mode.channels+" CH";
+      modes.appendChild(tag);
+    });
+
+    // Consumo eléctrico
+    const power=document.createElement("div");
+    power.className="fixture-detail";
+
+    power.textContent =
+      fixture.powerW !== null && fixture.powerW !== undefined
+      ? "Consumo: "+fixture.powerW+" W"
+      : "Consumo: Sin asignar";
+
+    // Botón editar consumo
+    const powerButton=document.createElement("button");
+    powerButton.className="small secondary";
+    powerButton.textContent="EDITAR CONSUMO";
+    powerButton.onclick=()=>editFixturePower(fixture.id);
+
+    const deleteButton=document.createElement("button");
+    deleteButton.className="small danger";
+    deleteButton.textContent="ELIMINAR APARATO";
+    deleteButton.onclick=()=>deleteFixture(fixture.id);
+
+    card.appendChild(title);
+    card.appendChild(modes);
+    card.appendChild(power);
+    card.appendChild(powerButton);
+    card.appendChild(deleteButton);
+    list.appendChild(card);
+  });
+
+  updateFixtureSelectors();
+}
+
+function editFixturePower(id) {
+
+  const fixture = library.find(f => f.id === id);
+
+  if (!fixture) return;
+
+  const currentPower =
+    fixture.powerW !== null && fixture.powerW !== undefined
+    ? fixture.powerW
+    : "";
+
+  const input = prompt(
+    "Introduce el consumo eléctrico en W.\n\nDéjalo vacío si quieres quitar el consumo:",
+    currentPower
+  );
+
+  if (input === null) return;
+
+  const cleanInput = input.trim();
+
+  if (cleanInput !== "") {
+
+    const watts = Number(cleanInput);
+
+    if (!Number.isFinite(watts) || watts <= 0) {
+      alert("Introduce un consumo válido mayor que 0 W.");
+      return;
+    }
+
+    fixture.powerW = watts;
+
+  } else {
+
+    fixture.powerW = null;
+
+  }
+
+  saveData();
+  renderLibrary();
+
+  message(
+    "libraryMessage",
+    "Consumo de " + fixture.name + " actualizado."
+  );
+}
+function updatePatchPower() {
+
+  let updated = 0;
+  let notFound = 0;
+
+  patches.forEach(p => {
+
+    const fixture = library.find(f => f.id === p.fixtureId);
+
+    if (!fixture) {
+      notFound++;
+      return;
+    }
+
+    p.powerW = fixture.powerW ?? null;
+
+    updated++;
+
+  });
+
+  saveData();
+  renderLXManager();
+
+  message(
+    "lxManagerMessage",
+    updated + " aparatos actualizados desde la biblioteca." +
+    (notFound > 0 ? " " + notFound + " sin ficha vinculada." : "")
+  );
+
+}
+
+function updateFixtureSelectors() {  
+  const modeSelect=document.getElementById("modeFixture");  
+  const patchSelect=document.getElementById("patchFixture");  
+  
+  const previousMode=modeSelect.value;  
+  const previousPatch=patchSelect.value;  
+  
+  modeSelect.innerHTML="";  
+  patchSelect.innerHTML="";  
+  
+  library.forEach(fixture=>{  
+    const label=fixture.brand  
+      ? fixture.brand+" · "+fixture.name  
+      : fixture.name;  
+  
+    const option1=document.createElement("option");  
+    option1.value=fixture.id;  
+    option1.textContent=label;  
+    modeSelect.appendChild(option1);  
+  
+    const option2=document.createElement("option");  
+    option2.value=fixture.id;  
+    option2.textContent=label;  
+    patchSelect.appendChild(option2);  
+  });  
+  
+  if(library.some(f=>f.id===previousMode)) {  
+    modeSelect.value=previousMode;  
+  }  
+  
+  if(library.some(f=>f.id===previousPatch)) {  
+    patchSelect.value=previousPatch;  
+  }  
+  
+  updateModes();  
+}  
+  
+function updateModes() {  
+  const fixtureId=document.getElementById("patchFixture").value;  
+  const fixture=library.find(f=>f.id===fixtureId);  
+  const select=document.getElementById("patchMode");  
+  
+  select.innerHTML="";  
+  
+  if(!fixture) return;  
+  
+  fixture.modes.forEach(mode=>{  
+    const option=document.createElement("option");  
+    option.value=mode.id;  
+    option.textContent=mode.name+" · "+mode.channels+" canales";  
+    select.appendChild(option);  
+  });  
+}  
+  
+function deleteFixture(id) {  
+  const fixture=library.find(f=>f.id===id);  
+  if(!fixture) return;  
+  
+  if(!confirm("¿Quieres eliminar "+fixture.name+" de tu biblioteca?")) return;  
+  
+  library=library.filter(f=>f.id!==id);  
+  saveData();  
+  renderLibrary();  
+  
+  message("libraryMessage","Aparato eliminado de la biblioteca.");  
+}  
+  
+// ========================================  
+// CREAR GRUPO DE PATCH  
+// ========================================  
+  
+function buildPatchGroup(fixture,mode,quantity,universe,address) {  
+  const group=[];  
+  
+  for(let i=1;i<=quantity;i++) {  
+    if(address+mode.channels-1>512) {  
+      universe++;  
+      address=1;  
+    }  
+  
+    const end=address+mode.channels-1;  
+  
+    group.push({
+  id:newId(),
+  fixtureId:fixture.id,
+  name:fixture.name,  
+      brand:fixture.brand,  
+      mode:mode.name,  
+      channels:mode.channels,  
+      number:i,  
+      universe:universe,  
+      start:address,  
+      end:end  
+    });  
+  
+    address=end+1;  
+  }  
+  
+  return group;  
+}  
+// ========================================  
+// BUSCAR SIGUIENTE GRUPO DE DIRECCIONES LIBRES  
+// ========================================  
+  
+function findNextFreeGroup(fixture, mode, quantity, initialUniverse, initialAddress) {  
+  
+  let universe = initialUniverse;  
+  let address = initialAddress;  
+  
+  for (let attempt = 0; attempt < 100000; attempt++) {  
+  
+    if (address > 512) {  
+      universe++;  
+      address = 1;  
+    }  
+  
+    const candidate = buildPatchGroup(  
+      fixture,  
+      mode,  
+      quantity,  
+      universe,  
+      address  
+    );  
+  
+    const hasConflict = candidate.some(item =>  
+      patches.some(p =>  
+        p.universe === item.universe &&  
+        item.start <= p.end &&  
+        item.end >= p.start  
+      )  
+    );  
+  
+    if (!hasConflict) {  
+      return candidate;  
+    }  
+  
+    address++;  
+  
+    if (address > 512) {  
+      address = 1;  
+      universe++;  
+    }  
+  }  
+  
+  return null;  
+}  
+// ========================================  
+// AÑADIR AL PATCH  
+// ========================================  
+  
+function addToPatch() {  
+  
+  const fixtureId = document.getElementById("patchFixture").value;  
+  const modeId = document.getElementById("patchMode").value;  
+  
+  const fixture = library.find(f => f.id === fixtureId);  
+  
+  if (!fixture) {  
+    message("patchMessage", "Primero debes crear un aparato.", false);  
+    return;  
+  }  
+  
+  const mode = fixture.modes.find(m => m.id === modeId);  
+  
+  if (!mode) {  
+    message("patchMessage", "Selecciona un modo DMX válido.", false);  
+    return;  
+  }  
+  
+  const quantity = Number(document.getElementById("quantityInput").value);  
+  const initialUniverse = Number(document.getElementById("universeInput").value);  
+  const initialAddress = Number(document.getElementById("addressInput").value);  
+const lx = document.getElementById("lxInput").value.trim();
+  
+  if (!Number.isInteger(quantity) || quantity < 1 || quantity > 1000) {  
+    message("patchMessage", "La cantidad debe ser un número válido.", false);  
+    return;  
+  }  
+  
+  if (!Number.isInteger(initialUniverse) || initialUniverse < 1) {  
+    message("patchMessage", "El universo debe ser igual o superior a 1.", false);  
+    return;  
+  }  
+  
+  if (!Number.isInteger(initialAddress) || initialAddress < 1 || initialAddress > 512) {  
+    message("patchMessage", "La dirección debe estar entre 1 y 512.", false);  
+    return;  
+  }  
+  
+  // CREAR PATCH SOLICITADO  
+  
+  let newFixtures = buildPatchGroup(  
+    fixture,  
+    mode,  
+    quantity,  
+    initialUniverse,  
+    initialAddress  
+  );  
+  
+  // COMPROBAR CONFLICTOS  
+  
+  const conflicts = newFixtures.filter(item =>  
+    patches.some(p =>  
+      p.universe === item.universe &&  
+      item.start <= p.end &&  
+      item.end >= p.start  
+    )  
+  );  
+  
+  // SI HAY CONFLICTO, BUSCAR ALTERNATIVA  
+  
+  if (conflicts.length > 0) {  
+  
+    const alternative = findNextFreeGroup(  
+      fixture,  
+      mode,  
+      quantity,  
+      initialUniverse,  
+      initialAddress  
+    );  
+  
+    if (!alternative) {  
+      message(  
+        "patchMessage",  
+        "No se ha encontrado una dirección libre.",  
+        false  
+      );  
+      return;  
+    }  
+  
+    const first = alternative[0];  
+    const last = alternative[alternative.length - 1];  
+  
+    const accepted = confirm(  
+      "¡DIRECCIÓN DMX OCUPADA!\n\n" +  
+  
+      "No puedes parchear este aparato en la dirección solicitada porque coincide con otro aparato.\n\n" +  
+  
+      "He encontrado una ubicación libre:\n\n" +  
+  
+      "INICIO:\n" +  
+      "Universo " + first.universe +  
+      " · Dirección " + first.start + "\n\n" +  
+  
+      "FINAL:\n" +  
+      "Universo " + last.universe +  
+      " · Dirección " + last.end + "\n\n" +  
+  
+      "¿Quieres utilizar estas nuevas direcciones?"  
+    );  
+  
+    if (!accepted) {  
+  
+      message(  
+        "patchMessage",  
+        "Operación cancelada. El patch no se ha modificado.",  
+        false  
+      );  
+  
+      return;  
+    }  
+  
+    newFixtures = alternative;  
+  }  
+  
+  // AÑADIR LOS APARATOS  
+  
+newFixtures.forEach(item => {
+
+  item.lx = lx;
+
+  // Guardar relación con la biblioteca
+  item.fixtureId = fixture.id;
+
+    // Guardar consumo eléctrico del aparato
+  item.powerW = fixture.powerW ?? null;
+
+  // Preparar asignación de línea eléctrica
+  item.powerLine = null;
+
+});
+  patches.push(...newFixtures);
+
+// Repartir automáticamente las líneas eléctricas
+const lxName = lx || "Sin asignar";
+autoAssignPowerLines(lxName);
+
+saveData();
+renderPatch();
+  
+  message(  
+    "patchMessage",  
+    quantity + " aparato(s) añadidos correctamente."  
+  );  
+}  
+  
+// ========================================  
+// MOSTRAR PATCH  
+// ========================================  
+  
+function renderPatch() {  
+    renderLXManager();
+  const list=document.getElementById("patchList");  
+  list.innerHTML="";  
+  
+patches.sort((a,b)=>  
+  a.universe-b.universe || a.start-b.start  
+);
+
+// Numeración global correlativa
+patches.forEach((p, index) => {
+  p.number = index + 1;
+});
+
+  document.getElementById("totalFixtures").textContent=patches.length;  
+  
+  const universes=[...new Set(patches.map(p=>p.universe))];  
+  document.getElementById("totalUniverses").textContent=universes.length;  
+  
+  if(patches.length===0) {  
+    list.innerHTML='<div class="empty">Todavía no has añadido aparatos al patch.</div>';  
+    return;  
+  }  
+  
+  universes.forEach(universe=>{  
+    const heading=document.createElement("div");  
+    heading.className="section-title";  
+    heading.style.marginTop="20px";  
+    heading.textContent="UNIVERSO "+universe;  
+    list.appendChild(heading);  
+  
+    patches.filter(p=>p.universe===universe).forEach(p=>{  
+      const card=document.createElement("div");  
+      card.className="patch-card";  
+  
+      const title=document.createElement("div");  
+      title.className="patch-name";  
+title.textContent=p.name+" #"+p.number+" - Address "+p.start;  
+      const detail=document.createElement("div");  
+      detail.className="patch-detail";  
+detail.textContent=
+  (p.brand?p.brand+" · ":"")+
+  "Modo: "+p.mode+" · "+
+  p.channels+" CH · "+
+  " · LX: "+(p.lx || "Sin asignar");  
+      const deleteButton=document.createElement("button");  
+      deleteButton.className="small danger";  
+      deleteButton.textContent="ELIMINAR";  
+      deleteButton.onclick=()=>removePatch(p.id);  
+      const lxButton=document.createElement("button");
+lxButton.className="small secondary";
+lxButton.textContent="CAMBIAR LX";
+lxButton.onclick=()=>changePatchLX(p.id);
+
+      card.appendChild(title);
+card.appendChild(detail);
+card.appendChild(lxButton);
+card.appendChild(deleteButton);
+      list.appendChild(card);  
+    }); 
+    renderLXSuggestions();
+  });  
+}  
+
+// ========================================
+// LX MANAGER
+// ========================================
+
+function getLXPowerSettings(name) {
+
+  if (!lxPowerSettings[name]) {
+    lxPowerSettings[name] = {
+      safetyMargin: 20
+    };
+  }
+
+  return lxPowerSettings[name];
+
+}
+
+  function updateLXPowerMargin(name, value) {
+
+  const margin = Number(value);
+
+  if (
+    !Number.isFinite(margin) ||
+    margin < 0 ||
+    margin >= 100
+  ) {
+    alert("El margen debe estar entre 0 y 99 %.");
+    renderLXManager();
+    return;
+  }
+
+  const settings = getLXPowerSettings(name);
+
+  settings.safetyMargin = margin;
+
+  saveData();
+  renderLXManager();
+
+  }
+
+
+
+function autoAssignPowerLines(lxName, redistributeAll = false) {
+
+  const fixtures = patches.filter(p =>
+    (((p.lx || "").trim() || "Sin asignar") === lxName) &&
+    typeof p.powerW === "number" &&
+    Number.isFinite(p.powerW) &&
+    p.powerW >= 0
+  );
+
+  if (fixtures.length === 0) return;
+
+  const settings = getLXPowerSettings(lxName);
+  const margin = Number(settings.safetyMargin ?? 20);
+  const capacity = 3680 * (1 - margin / 100);
+
+// REPARTO COMPLETO DESDE CERO
+if (redistributeAll) {
+
+  // ORDENAR APARATOS DE MAYOR A MENOR CONSUMO
+  const sortedFixtures = [...fixtures].sort(
+    (a, b) => b.powerW - a.powerW
+  );
+
+  // CALCULAR CUÁNTAS LÍNEAS NECESITAMOS
+  const totalPower = sortedFixtures.reduce(
+    (total, p) => total + p.powerW,
+    0
+  );
+
+  const requiredLines = Math.max(
+    1,
+    Math.ceil(totalPower / capacity)
+  );
+
+  // CREAR TODAS LAS LÍNEAS ANTES DE REPARTIR
+  const lines = Array.from(
+    { length: requiredLines },
+    () => ({
+      power: 0,
+      fixtures: []
+    })
+  );
+
+  // REPARTIR EN LA LÍNEA MENOS CARGADA
+  sortedFixtures.forEach(p => {
+
+    let selectedLine = -1;
+    let lowestLoad = Infinity;
+
+    lines.forEach((line, index) => {
+
+      if (
+        line.power + p.powerW <= capacity &&
+        line.power < lowestLoad
+      ) {
+        lowestLoad = line.power;
+        selectedLine = index;
+      }
+
+    });
+
+    // CREAR OTRA LÍNEA SI NINGUNA PUEDE ALOJARLO
+    if (selectedLine === -1) {
+
+      lines.push({
+        power: 0,
+        fixtures: []
+      });
+
+      selectedLine = lines.length - 1;
+
+    }
+
+    lines[selectedLine].power += p.powerW;
+    lines[selectedLine].fixtures.push(p);
+
+  });
+
+  // GUARDAR LAS ASIGNACIONES
+  lines.forEach((line, index) => {
+
+    line.fixtures.forEach(p => {
+      p.powerLine = index + 1;
+    });
+
+  });
+
+  return;
+}
+  // REPARTO NORMAL: CONSERVAR LAS ASIGNACIONES EXISTENTES
+  const lines = {};
+
+  fixtures.forEach(p => {
+
+    const line = Number(p.powerLine);
+
+    if (Number.isInteger(line) && line >= 1) {
+
+      if (!lines[line]) {
+        lines[line] = 0;
+      }
+
+      lines[line] += p.powerW;
+
+    }
+
+  });
+
+  const pending = fixtures
+    .filter(p =>
+      !Number.isInteger(Number(p.powerLine)) ||
+      Number(p.powerLine) < 1
+    )
+    .sort((a, b) => b.powerW - a.powerW);
+
+  pending.forEach(p => {
+
+    let selectedLine = null;
+    let lowestLoad = Infinity;
+
+    Object.keys(lines).forEach(line => {
+
+      const load = lines[line];
+
+      if (
+        load + p.powerW <= capacity &&
+        load < lowestLoad
+      ) {
+        lowestLoad = load;
+        selectedLine = Number(line);
+      }
+
+    });
+
+    if (selectedLine === null) {
+
+      const existingNumbers = Object.keys(lines).map(Number);
+
+      selectedLine = existingNumbers.length > 0
+        ? Math.max(...existingNumbers) + 1
+        : 1;
+
+      lines[selectedLine] = 0;
+
+    }
+
+    p.powerLine = selectedLine;
+    lines[selectedLine] += p.powerW;
+
+  });
+
+}
+
+
+function renderLXManager() {
+  const container = document.getElementById("lxManagerContent");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const lxGroups = {};
+
+  patches.forEach(p => {
+    const name = (p.lx || "").trim() || "Sin asignar";
+    if (!lxGroups[name]) lxGroups[name] = [];
+    lxGroups[name].push(p);
+  });
+
+  const lxNames = Object.keys(lxGroups).sort((a, b) =>
+    a.localeCompare(b, "es", { sensitivity: "base" })
+  );
+
+  if (lxNames.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "lx-empty";
+    empty.textContent = "No hay aparatos en el patch.";
+    container.appendChild(empty);
+    return;
+  }
+
+  const formatWatts = value =>
+    Number(value || 0).toLocaleString("es-ES", {
+      maximumFractionDigits: 0
+    }) + " W";
+
+  lxNames.forEach(name => {
+    const fixtures = lxGroups[name];
+    const settings = getLXPowerSettings(name);
+    const margin = Number(settings.safetyMargin ?? 20);
+    const nominalPower = 3680;
+    const usablePower = nominalPower * (1 - margin / 100);
+
+    let totalPower = 0;
+    let knownPower = 0;
+    let unknownPower = 0;
+
+    fixtures.forEach(p => {
+      if (
+        typeof p.powerW === "number" &&
+        Number.isFinite(p.powerW) &&
+        p.powerW >= 0
+      ) {
+        totalPower += p.powerW;
+        knownPower++;
+      } else {
+        unknownPower++;
+      }
+    });
+
+    const requiredLines = totalPower > 0
+      ? Math.ceil(totalPower / usablePower)
+      : 0;
+
+    const assignedLineNumbers = [
+      ...new Set(
+        fixtures
+          .map(p => Number(p.powerLine))
+          .filter(line => Number.isInteger(line) && line >= 1)
+      )
+    ];
+
+    const card = document.createElement("div");
+    card.className = "lx-card";
+
+    // CABECERA LX
+    const header = document.createElement("div");
+    header.className = "lx-header";
+
+    const headingInfo = document.createElement("div");
+    const title = document.createElement("h3");
+    title.className = "lx-title";
+    title.textContent = "LX: " + name;
+
+    const subtitle = document.createElement("div");
+    subtitle.className = "lx-subtitle";
+    subtitle.textContent = fixtures.length + " aparatos en esta LX";
+
+    headingInfo.appendChild(title);
+    headingInfo.appendChild(subtitle);
+    header.appendChild(headingInfo);
+
+    const actions = document.createElement("div");
+    actions.className = "lx-actions";
+
+    if (name !== "Sin asignar") {
+      const renameButton = document.createElement("button");
+      renameButton.className = "small secondary";
+      renameButton.textContent = "RENOMBRAR LX";
+      renameButton.onclick = () => renameLX(name);
+      actions.appendChild(renameButton);
+    }
+
+    const redistributeButton = document.createElement("button");
+    redistributeButton.className = "small secondary";
+    redistributeButton.textContent = "REPARTIR AUTOMÁTICAMENTE";
+    redistributeButton.onclick = () => {
+      const accepted = confirm(
+        "¿Quieres redistribuir todos los aparatos de " +
+        name +
+        " desde cero?\n\n" +
+        "Se modificarán las asignaciones actuales de líneas Schuko."
+      );
+
+      if (!accepted) return;
+
+      autoAssignPowerLines(name, true);
+      saveData();
+      renderLXManager();
+    };
+    actions.appendChild(redistributeButton);
+
+    header.appendChild(actions);
+    card.appendChild(header);
+
+    // MÉTRICAS RESUMEN
+    const summary = document.createElement("div");
+    summary.className = "lx-summary-grid";
+
+    const addMetric = (label, value, unit) => {
+      const metric = document.createElement("div");
+      metric.className = "lx-metric";
+
+      const metricLabel = document.createElement("div");
+      metricLabel.className = "lx-metric-label";
+      metricLabel.textContent = label;
+
+      const metricValue = document.createElement("div");
+      metricValue.className = "lx-metric-value";
+      metricValue.textContent = value;
+
+      if (unit) {
+        const metricUnit = document.createElement("span");
+        metricUnit.className = "lx-metric-unit";
+        metricUnit.textContent = unit;
+        metricValue.appendChild(metricUnit);
+      }
+
+      metric.appendChild(metricLabel);
+      metric.appendChild(metricValue);
+      summary.appendChild(metric);
+    };
+
+    addMetric(
+      "Consumo conocido",
+      knownPower > 0 ? totalPower.toLocaleString("es-ES", {
+        maximumFractionDigits: 0
+      }) : "—",
+      knownPower > 0 ? "W" : ""
+    );
+    addMetric("Sin consumo", String(unknownPower), "aparatos");
+    addMetric("Líneas calculadas", String(requiredLines), "Schuko");
+    addMetric("Líneas asignadas", String(assignedLineNumbers.length), "Schuko");
+
+    card.appendChild(summary);
+
+    // CONFIGURACIÓN ELÉCTRICA
+    const config = document.createElement("div");
+    config.className = "lx-config";
+
+    const configTitle = document.createElement("div");
+    configTitle.className = "lx-config-title";
+    configTitle.textContent = "CONFIGURACIÓN ELÉCTRICA";
+    config.appendChild(configTitle);
+
+    const configRow = document.createElement("div");
+    configRow.className = "lx-config-row";
+
+    const marginLabel = document.createElement("label");
+    marginLabel.textContent = "Margen de seguridad (%)";
+
+    const marginInput = document.createElement("input");
+    marginInput.type = "number";
+    marginInput.min = "0";
+    marginInput.max = "99";
+    marginInput.step = "1";
+    marginInput.value = margin;
+    marginInput.setAttribute("aria-label", "Margen de seguridad para " + name);
+    marginInput.onchange = () => {
+      updateLXPowerMargin(name, marginInput.value);
+    };
+
+    configRow.appendChild(marginLabel);
+    configRow.appendChild(marginInput);
+    config.appendChild(configRow);
+
+    const capacityInfo = document.createElement("div");
+    capacityInfo.className = "lx-capacity-info";
+    capacityInfo.textContent =
+      "Potencia nominal por Schuko: " + formatWatts(nominalPower) +
+      " · Potencia útil con margen: " + formatWatts(usablePower) +
+      (requiredLines > 0
+        ? " · Capacidad calculada total: " + formatWatts(requiredLines * usablePower)
+        : "");
+    config.appendChild(capacityInfo);
+
+    card.appendChild(config);
+
+    // AVISO DE CONSUMOS DESCONOCIDOS
+    if (unknownPower > 0) {
+      const warning = document.createElement("div");
+      warning.className = "lx-warning";
+      warning.textContent =
+        "ATENCIÓN: hay " + unknownPower +
+        " aparato(s) sin consumo conocido. No se incluyen en los cálculos de potencia ni en el reparto automático.";
+      card.appendChild(warning);
+    }
+
+    // DISTRIBUCIÓN POR LÍNEAS
+    const linesHeading = document.createElement("div");
+    linesHeading.className = "lx-lines-heading";
+    linesHeading.textContent = "DISTRIBUCIÓN POR LÍNEAS SCHUKO";
+    card.appendChild(linesHeading);
+
+    const powerLineGroups = {};
+
+    fixtures.forEach(p => {
+      const line = Number(p.powerLine);
+      const groupName =
+        Number.isInteger(line) && line >= 1
+          ? "Línea Schuko " + line
+          : "Pendientes de asignar";
+
+      if (!powerLineGroups[groupName]) {
+        powerLineGroups[groupName] = [];
+      }
+      powerLineGroups[groupName].push(p);
+    });
+
+    const groupNames = Object.keys(powerLineGroups).sort((a, b) => {
+      if (a === "Pendientes de asignar") return 1;
+      if (b === "Pendientes de asignar") return -1;
+      return Number(a.replace("Línea Schuko ", "")) -
+        Number(b.replace("Línea Schuko ", ""));
+    });
+
+    groupNames.forEach(groupName => {
+      const isPending = groupName === "Pendientes de asignar";
+      const lineFixtures = powerLineGroups[groupName];
+
+      const linePower = lineFixtures.reduce((total, p) => {
+        return total + (
+          typeof p.powerW === "number" &&
+          Number.isFinite(p.powerW) &&
+          p.powerW >= 0
+            ? p.powerW
+            : 0
+        );
+      }, 0);
+
+      const availablePower = usablePower - linePower;
+      const loadPercentage = usablePower > 0
+        ? (linePower / usablePower) * 100
+        : 0;
+
+      const lineCard = document.createElement("div");
+      lineCard.className = "lx-line-card";
+      if (isPending) {
+        lineCard.classList.add("pending");
+      } else if (linePower > usablePower) {
+        lineCard.classList.add("overloaded");
+      }
+
+      const lineHeader = document.createElement("div");
+      lineHeader.className = "lx-line-header";
+
+      const lineTitle = document.createElement("div");
+      lineTitle.className = "lx-line-title";
+      lineTitle.textContent = groupName;
+
+      const lineHeaderRight = document.createElement("div");
+      lineHeaderRight.style.display = "flex";
+      lineHeaderRight.style.alignItems = "center";
+      lineHeaderRight.style.flexWrap = "wrap";
+      lineHeaderRight.style.gap = "8px";
+
+      const lineConsumption = document.createElement("div");
+      lineConsumption.className = "lx-line-consumption";
+      lineConsumption.textContent = formatWatts(linePower);
+
+      const status = document.createElement("span");
+      status.className = "lx-line-status";
+
+      if (isPending) {
+        status.classList.add("warning");
+        status.textContent = "PENDIENTE";
+      } else if (linePower > usablePower) {
+        status.classList.add("danger");
+        status.textContent = "SOBRECARGA";
+      } else if (loadPercentage > 90) {
+        status.classList.add("danger");
+        status.textContent = "CARGA ALTA";
+      } else if (loadPercentage > 70) {
+        status.classList.add("warning");
+        status.textContent = "CARGA MEDIA";
+      } else {
+        status.textContent = "CORRECTA";
+      }
+
+      lineHeader.appendChild(lineTitle);
+      lineHeaderRight.appendChild(lineConsumption);
+      lineHeaderRight.appendChild(status);
+      lineHeader.appendChild(lineHeaderRight);
+      lineCard.appendChild(lineHeader);
+
+      if (!isPending) {
+        const progressTrack = document.createElement("div");
+        progressTrack.className = "lx-progress-track";
+
+        const progressFill = document.createElement("div");
+        progressFill.className = "lx-progress-fill";
+        progressFill.style.width = Math.min(Math.max(loadPercentage, 0), 100) + "%";
+
+        if (loadPercentage > 90) {
+          progressFill.style.background = "#EF4444";
+        } else if (loadPercentage > 70) {
+          progressFill.style.background = "#EAB308";
+        } else {
+          progressFill.style.background = "#16A34A";
+        }
+
+        progressTrack.appendChild(progressFill);
+        lineCard.appendChild(progressTrack);
+
+        const details = document.createElement("div");
+        details.className = "lx-line-details";
+
+        const addLineDetail = (label, value) => {
+          const detail = document.createElement("div");
+          detail.className = "lx-line-detail";
+
+          const detailLabel = document.createElement("div");
+          detailLabel.className = "lx-line-detail-label";
+          detailLabel.textContent = label;
+
+          const detailValue = document.createElement("div");
+          detailValue.className = "lx-line-detail-value";
+          detailValue.textContent = value;
+
+          detail.appendChild(detailLabel);
+          detail.appendChild(detailValue);
+          details.appendChild(detail);
+        };
+
+        addLineDetail("Capacidad útil", formatWatts(usablePower));
+        addLineDetail("Disponible", formatWatts(availablePower));
+        addLineDetail("Carga", loadPercentage.toFixed(0) + " %");
+
+        lineCard.appendChild(details);
+      }
+
+      // APARATOS DE ESTA LÍNEA
+      lineFixtures.forEach(p => {
+        const item = document.createElement("div");
+        item.className = "lx-fixture-row";
+
+        const fixtureInfo = document.createElement("div");
+        fixtureInfo.className = "lx-fixture-info";
+
+        const fixtureTitle = document.createElement("div");
+        fixtureTitle.className = "lx-fixture-name";
+        fixtureTitle.textContent =
+          p.name + (p.number ? " #" + p.number : "");
+
+        const fixtureSub = document.createElement("div");
+        fixtureSub.className = "lx-fixture-sub";
+        fixtureSub.textContent =
+          (p.brand ? p.brand + " · " : "") +
+          (
+            typeof p.powerW === "number" && Number.isFinite(p.powerW)
+              ? formatWatts(p.powerW)
+              : "Consumo sin asignar"
+          );
+
+        const changeLXButton = document.createElement("button");
+        changeLXButton.className = "small secondary";
+        changeLXButton.textContent = "CAMBIAR LX";
+        changeLXButton.onclick = () => changePatchLX(p.id);
+
+        fixtureInfo.appendChild(fixtureTitle);
+        fixtureInfo.appendChild(fixtureSub);
+        fixtureInfo.appendChild(changeLXButton);
+
+        const lineSelect = document.createElement("select");
+        lineSelect.className = "lx-line-select";
+        lineSelect.setAttribute("aria-label", "Asignar línea Schuko para " + p.name);
+
+        const pendingOption = document.createElement("option");
+        pendingOption.value = "";
+        pendingOption.textContent = "Sin asignar";
+        lineSelect.appendChild(pendingOption);
+
+        for (let i = 1; i <= 18; i++) {
+          const option = document.createElement("option");
+          option.value = String(i);
+          option.textContent = "Línea " + i;
+          lineSelect.appendChild(option);
+        }
+
+        lineSelect.value = p.powerLine
+          ? String(p.powerLine)
+          : "";
+
+        lineSelect.onchange = () => {
+          p.powerLine = lineSelect.value === ""
+            ? null
+            : Number(lineSelect.value);
+
+          saveData();
+          renderLXManager();
+        };
+
+        item.appendChild(fixtureInfo);
+        item.appendChild(lineSelect);
+        lineCard.appendChild(item);
+      });
+
+      card.appendChild(lineCard);
+    });
+
+    container.appendChild(card);
+  });
+}
+
+
+  // ========================================
+// RENOMBRAR LX COMPLETA
+// ========================================
+
+function renameLX(oldName) {
+
+  const newName = prompt(
+    "Introduce el nuevo nombre para " + oldName + ":",
+    oldName
+  );
+
+  if (newName === null) return;
+
+  const cleanName = newName.trim();
+
+  if (cleanName === "") {
+    alert("El nombre de la LX no puede estar vacío.");
+    return;
+  }
+
+  if (cleanName === oldName) return;
+
+  const existingLX = patches.some(p =>
+    (p.lx || "").trim() === cleanName
+  );
+
+  if (existingLX) {
+
+    const confirmMerge = confirm(
+      "Ya existe una LX llamada " + cleanName +
+      ". ¿Quieres juntar ambas líneas?"
+    );
+
+    if (!confirmMerge) return;
+
+  }
+
+  patches.forEach(p => {
+
+    if ((p.lx || "").trim() === oldName) {
+      p.lx = cleanName;
+    }
+
+  });
+
+  saveData();
+  renderPatch();
+
+  message(
+    "lxManagerMessage",
+    oldName + " se ha renombrado a " + cleanName + "."
+  );
+
+}
+// ========================================
+// SUGERENCIAS DE NOMBRES LX
+// ========================================
+
+function renderLXSuggestions() {
+
+  const datalist = document.getElementById("lxSuggestions");
+
+  if (!datalist) return;
+
+  datalist.innerHTML = "";
+
+  const lxNames = [
+    ...new Set(
+      patches
+        .map(p => (p.lx || "").trim())
+        .filter(name => name !== "")
+    )
+  ].sort((a, b) => a.localeCompare(b));
+
+  lxNames.forEach(name => {
+
+    const option = document.createElement("option");
+
+    option.value = name;
+
+    datalist.appendChild(option);
+
+  });
+}
+
+function changePatchLX(id) {
+
+  const fixture = patches.find(p => p.id === id);
+
+  if (!fixture) return;
+
+  const newLX = prompt(
+    "Introduce el nuevo nombre de la LX:",
+    fixture.lx || ""
+  );
+
+  if (newLX === null) return;
+
+  fixture.lx = newLX.trim();
+
+  saveData();
+  renderPatch();
+
+  message(
+    "patchMessage",
+    fixture.name + " #" + fixture.number +
+    " asignado a " + (fixture.lx || "Sin asignar") + "."
+  );
+}
+
+function removePatch(id) {  
+  patches=patches.filter(p=>p.id!==id);  
+  saveData();  
+  renderPatch();
+  message("patchMessage","Aparato eliminado del patch.");  
+}  
+  
+
+// ========================================
+// EXPORTAR E IMPORTAR PATCH JSON
+// ========================================
+
+// ========================================
+// RECUPERAR PROYECTO DESDE PDF
+// ========================================
+
+async function recoverProjectFromPDF(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  try {
+
+    message("exportMessage", "Leyendo archivos del PDF...");
+
+    // Comprobar que PDF.js está disponible
+
+    if (!window.pdfjsLib) {
+      throw new Error("PDF.js no está disponible.");
+    }
+
+    // Leer PDF
+
+    const bytes = new Uint8Array(await file.arrayBuffer());
+
+    const pdf = await pdfjsLib.getDocument({
+      data: bytes
+    }).promise;
+
+    const attachments = await pdf.getAttachments();
+
+    if (!attachments) {
+      throw new Error("El PDF no contiene archivos adjuntos.");
+    }
+
+    // Buscar los dos JSON
+
+const patchFile =
+  attachments["DMX_Patch.json"] ||
+  attachments["Rubenca_DMX_Patch.json"];
+
+const libraryFile =
+  attachments["DMX_Library.json"] ||
+  attachments["Rubenca_DMX_Library.json"];
+    
+    if (!patchFile || !libraryFile) {
+      throw new Error(
+        "No se encuentran los dos archivos JSON necesarios."
+      );
+    }
+
+    // Leer contenidos JSON
+
+    const patchText = new TextDecoder().decode(patchFile.content);
+    const libraryText = new TextDecoder().decode(libraryFile.content);
+
+    const patchData = JSON.parse(patchText);
+    const libraryData = JSON.parse(libraryText);
+
+    // Validar ambos archivos
+
+    if (!validatePatchData(patchData)) {
+      throw new Error("El archivo del patch no es válido.");
+    }
+
+    if (!validateLibrary(libraryData)) {
+      throw new Error("El archivo de biblioteca no es válido.");
+    }
+
+    // Preparar biblioteca sin duplicados
+
+    const newFixtures = [];
+
+    let skipped = 0;
+
+    libraryData.fixtures.forEach(imported => {
+
+      const exists = library.some(f =>
+        f.name.toLowerCase() === imported.name.toLowerCase() &&
+        (f.brand || "").toLowerCase() === (imported.brand || "").toLowerCase()
+      );
+
+      if (exists) {
+        skipped++;
+        return;
+      }
+
+      newFixtures.push({
+        id: newId(),
+        brand: imported.brand || "",
+        name: imported.name.trim(),
+        modes: imported.modes.map(mode => ({
+          id: newId(),
+          name: mode.name.trim(),
+          channels: Number(mode.channels)
+        }))
+      });
+
+    });
+
+    // Confirmar recuperación
+
+    const confirmed = confirm(
+      "¿Quieres recuperar este proyecto?\n\n" +
+      "Biblioteca:\n" +
+      "- Aparatos nuevos que se añadirán: " + newFixtures.length + "\n" +
+      "- Duplicados que se omitirán: " + skipped + "\n\n" +
+      "Patch:\n" +
+      "- Aparatos que contiene el proyecto: " + patchData.patches.length + "\n\n" +
+      "El patch actual será sustituido completamente.\n" +
+      "Los aparatos actuales de la biblioteca se conservarán."
+    );
+
+    if (!confirmed) return;
+
+    // Actualizar biblioteca y patch
+
+    library.push(...newFixtures);
+
+    patches = patchData.patches.map(p => ({
+      ...p,
+      id: newId()
+    }));
+
+lxPowerSettings = patchData.lxPowerSettings || {};
+
+// Recuperar los datos del proyecto si existen
+if (
+  patchData.projectInfo &&
+  typeof patchData.projectInfo === "object" &&
+  !Array.isArray(patchData.projectInfo)
+) {
+  projectInfo = {
+    name: typeof patchData.projectInfo.name === "string"
+      ? patchData.projectInfo.name
+      : "",
+    version: patchData.projectInfo.version != null
+      ? String(patchData.projectInfo.version)
+      : "1"
+  };
+}
+
+// Guardar y actualizar interfaz
+
+saveData();
+
+renderProjectInfo();
+renderLibrary();
+renderPatch();
+    message(
+      "exportMessage",
+      "Proyecto recuperado correctamente. " +
+      newFixtures.length + " aparato(s) añadidos a la biblioteca y " +
+      skipped + " duplicado(s) omitidos."
+    );
+
+  } catch (error) {
+
+    console.error("Error recuperando proyecto:", error);
+
+    message(
+      "exportMessage",
+      "No se ha podido recuperar el proyecto: " + error.message,
+      false
+    );
+
+  } finally {
+
+    event.target.value = "";
+
+  }
+
+}
+
+
+function buildPatchExportData() {
+  return {
+    app: "DMX Tools",
+    type: "patch",
+    version: "1.0",
+    exportDate: new Date().toISOString(),
+    projectInfo: projectInfo,
+    patches: patches,
+    lxPowerSettings: lxPowerSettings
+  };
+}
+
+function buildLibraryExportData() {
+  return {
+    app: "DMX Tools",
+    version: "1.0",
+    exportDate: new Date().toISOString(),
+    fixtures: library
+  };
+}
+
+// EXPORTAR PATCH
+
+function exportPatch() {
+
+  if (!patches.length) {
+    message("exportMessage", "No hay ningún aparato en el patch para exportar.", false);
+    return;
+  }
+
+  const data = buildPatchExportData();
+
+  const json = JSON.stringify(data, null, 2);
+
+  const blob = new Blob(
+    [json],
+    { type: "application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "DMX_Patch.json";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+
+  message("exportMessage", "Patch exportado correctamente en JSON.");
+}
+
+
+// VALIDAR PATCH IMPORTADO
+
+function validatePatchData(data) {
+
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    return false;
+  }
+
+  if (!Array.isArray(data.patches)) {
+    return false;
+  }
+
+  if (
+    data.lxPowerSettings !== undefined &&
+    (
+      !data.lxPowerSettings ||
+      typeof data.lxPowerSettings !== "object" ||
+      Array.isArray(data.lxPowerSettings)
+    )
+  ) {
+    return false;
+  }
+
+  for (const p of data.patches) {
+
+    if (!p || typeof p !== "object" || Array.isArray(p)) {
+      return false;
+    }
+
+    if (
+      typeof p.name !== "string" ||
+      typeof p.mode !== "string" ||
+      !Number.isInteger(p.channels) ||
+      p.channels < 1 ||
+      p.channels > 512 ||
+      !Number.isInteger(p.number) ||
+      p.number < 1 ||
+      !Number.isInteger(p.universe) ||
+      p.universe < 1 ||
+      !Number.isInteger(p.start) ||
+      p.start < 1 ||
+      p.start > 512 ||
+      !Number.isInteger(p.end) ||
+      p.end < p.start ||
+      p.end > 512
+    ) {
+      return false;
+    }
+
+    if (
+      p.powerW !== null &&
+      p.powerW !== undefined &&
+      (!Number.isFinite(p.powerW) || p.powerW < 0)
+    ) {
+      return false;
+    }
+
+    if (
+      p.powerLine !== null &&
+      p.powerLine !== undefined &&
+      (!Number.isInteger(p.powerLine) || p.powerLine < 1)
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
+// IMPORTAR PATCH
+
+function importPatch(event) {
+
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+
+    try {
+
+      const data = JSON.parse(e.target.result);
+
+      if (!validatePatchData(data)) {
+        message("exportMessage", "El archivo no contiene un patch válido de DMX Tools.", false);
+        return;
+      }
+
+      const confirmed = confirm(
+        "¿Quieres importar este patch?\n\n" +
+        "Se sustituirá el patch actual por el contenido del archivo.\n\n" +
+        "La biblioteca de aparatos NO se modificará."
+      );
+
+      if (!confirmed) return;
+
+      patches = data.patches.map(p => ({
+        ...p,
+        id: p.id || newId()
+      }));
+
+lxPowerSettings = data.lxPowerSettings || {};
+
+// Recuperar los datos del proyecto si existen
+if (
+  data.projectInfo &&
+  typeof data.projectInfo === "object" &&
+  !Array.isArray(data.projectInfo)
+) {
+  projectInfo = {
+    name: typeof data.projectInfo.name === "string"
+      ? data.projectInfo.name
+      : "",
+    version: data.projectInfo.version != null
+      ? String(data.projectInfo.version)
+      : "1"
+  };
+}
+
+saveData();
+
+renderProjectInfo();
+renderPatch();
+      message("exportMessage", "Patch importado correctamente.");
+
+    } catch (error) {
+
+      console.error("Error al importar el patch:", error);
+
+      message("exportMessage", "No se ha podido leer el archivo JSON.", false);
+
+    } finally {
+
+      event.target.value = "";
+
+    }
+  };
+
+  reader.onerror = function() {
+
+    message("exportMessage", "Error al leer el archivo seleccionado.", false);
+    event.target.value = "";
+
+  };
+
+  reader.readAsText(file);
+
+}
+ 
+// ========================================
+// EXPORTAR PDF
+// ========================================
+
+async function exportPDF() {
+  
+  if (patches.length === 0) {
+    message("exportMessage", "No hay ningún aparato en el patch.", false);
+    return;
+  }
+
+  if (
+    !window.jspdf ||
+    !window.jspdf.jsPDF ||
+    typeof window.jspdf.jsPDF.API.autoTable !== "function"
+  ) {
+    message(
+      "exportMessage",
+      "No se han podido cargar las bibliotecas necesarias para generar el PDF.",
+      false
+    );
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+
+  const doc = new jsPDF({
+    orientation: "landscape",
+    unit: "mm",
+    format: "a4"
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+
+  const margin = 14;
+  let currentY = 20;
+
+  const blue = [35, 126, 174];
+  const dark = [30, 35, 45];
+  const grey = [100, 108, 120];
+  const red = [220, 65, 65];
+
+// ========================================
+// CABECERA
+// ========================================
+
+doc.setFillColor(...dark);
+doc.rect(0, 0, pageWidth, 35, "F");
+
+doc.setTextColor(255, 255, 255);
+doc.setFont("helvetica", "bold");
+doc.setFontSize(17);
+
+doc.text("RUBENCA AUDIOVISUALS", margin, 12);
+
+doc.setFontSize(10);
+doc.setFont("helvetica", "normal");
+
+doc.text("DMX Tools · Patch Manager", margin, 20);
+
+// Nombre y versión del proyecto
+doc.setFont("helvetica", "bold");
+doc.setFontSize(11);
+
+doc.text(
+  getProjectTitle(),
+  margin,
+  28,
+  { maxWidth: pageWidth - margin * 2 }
+);
+
+doc.setFontSize(9);
+doc.setFont("helvetica", "normal");
+
+const exportDate = new Date().toLocaleString("es-ES");
+
+doc.text(
+  "Fecha: " + exportDate,
+  pageWidth - margin,
+  19,
+  { align: "right" }
+);
+
+doc.setTextColor(30, 35, 45);
+
+currentY = 43;
+
+// ========================================
+// 1. PATCH DMX
+// ========================================
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(13);
+  doc.setTextColor(...blue);
+
+  doc.text("PATCH DMX", margin, currentY);
+
+  currentY += 4;
+
+  const patchRows = patches
+    .slice()
+    .sort((a, b) =>
+      a.universe - b.universe || a.start - b.start
+    )
+    .map(p => [
+      p.universe,
+      p.start,
+      p.end,
+      p.brand || "",
+      p.name,
+      p.number,
+      p.mode,
+      p.channels,
+      p.lx || "Sin asignar"
+    ]);
+
+  doc.autoTable({
+    startY: currentY,
+    margin: {
+      left: margin,
+      right: margin
+    },
+    head: [[
+      "Universo",
+      "Dir. inicial",
+      "Dir. final",
+      "Fabricante",
+      "Aparato",
+      "Nº",
+      "Modo",
+      "Canales",
+      "LX"
+    ]],
+    body: patchRows,
+    theme: "grid",
+    styles: {
+      font: "helvetica",
+      fontSize: 8,
+      cellPadding: 2,
+      textColor: [45, 50, 60],
+      lineColor: [220, 224, 230],
+      lineWidth: 0.15
+    },
+    headStyles: {
+      fillColor: blue,
+      textColor: [255, 255, 255],
+      fontStyle: "bold"
+    },
+    alternateRowStyles: {
+      fillColor: [244, 247, 250]
+    },
+    columnStyles: {
+      0: { cellWidth: 17 },
+      1: { cellWidth: 20 },
+      2: { cellWidth: 18 },
+      3: { cellWidth: 30 },
+      4: { cellWidth: 43 },
+      5: { cellWidth: 12 },
+      6: { cellWidth: 35 },
+      7: { cellWidth: 17 },
+      8: { cellWidth: "auto" }
+    }
+  });
+
+  currentY = doc.lastAutoTable.finalY + 13;
+
+  // ========================================
+  // 2. RESUMEN ELÉCTRICO POR LX
+  // ========================================
+
+  if (currentY > pageHeight - 35) {
+    doc.addPage();
+    currentY = 20;
+  }
+
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.setTextColor(...blue);
+
+  doc.text("RESUMEN ELÉCTRICO POR LX", margin, currentY);
+
+  currentY += 9;
+
+  const lxGroups = {};
+
+  patches.forEach(p => {
+
+    const name = (p.lx || "").trim() || "Sin asignar";
+
+    if (!lxGroups[name]) {
+      lxGroups[name] = [];
+    }
+
+    lxGroups[name].push(p);
+
+  });
+
+  const lxNames = Object.keys(lxGroups).sort();
+
+  lxNames.forEach(name => {
+
+    const fixtures = lxGroups[name];
+
+    const settings = getLXPowerSettings(name);
+    const safetyMargin = Number(settings.safetyMargin ?? 20);
+    const capacity = 3680 * (1 - safetyMargin / 100);
+
+    const knownPower = fixtures.reduce(
+      (total, p) => total + (
+        typeof p.powerW === "number" &&
+        Number.isFinite(p.powerW)
+          ? p.powerW
+          : 0
+      ),
+      0
+    );
+
+    const unknownPower = fixtures.filter(p =>
+      typeof p.powerW !== "number" ||
+      !Number.isFinite(p.powerW)
+    ).length;
+
+    // AGRUPAR POR LÍNEA
+
+    const lineGroups = {};
+
+    fixtures.forEach(p => {
+
+      const line = Number(p.powerLine);
+
+      const groupName =
+        Number.isInteger(line) && line >= 1
+          ? "Línea Schuko " + line
+          : "Pendientes de asignar";
+
+      if (!lineGroups[groupName]) {
+        lineGroups[groupName] = [];
+      }
+
+      lineGroups[groupName].push(p);
+
+    });
+
+    const groupNames = Object.keys(lineGroups).sort((a, b) => {
+
+      if (a === "Pendientes de asignar") return 1;
+      if (b === "Pendientes de asignar") return -1;
+
+      return Number(a.replace("Línea Schuko ", "")) -
+             Number(b.replace("Línea Schuko ", ""));
+
+    });
+
+    // COMPROBAR ESPACIO PARA LA CABECERA LX
+
+    if (currentY > pageHeight - 45) {
+      doc.addPage();
+      currentY = 20;
+    }
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.setTextColor(...dark);
+
+    doc.text("LX: " + name, margin, currentY);
+
+    currentY += 6;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.setTextColor(...grey);
+
+    doc.text(
+      "Margen de seguridad: " + safetyMargin +
+      " %  |  Capacidad útil por Schuko: " +
+      capacity.toLocaleString("es-ES", {
+        maximumFractionDigits: 0
+      }) +
+      " W  |  Consumo conocido: " +
+      knownPower.toLocaleString("es-ES") +
+      " W  |  Aparatos sin consumo: " + unknownPower,
+      margin,
+      currentY
+    );
+
+    currentY += 7;
+
+    // TABLAS DE CADA LÍNEA
+
+    groupNames.forEach(groupName => {
+
+      const lineFixtures = lineGroups[groupName];
+
+      if (currentY > pageHeight - 45) {
+        doc.addPage();
+        currentY = 20;
+      }
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(...blue);
+
+      doc.text(groupName, margin, currentY);
+
+      currentY += 3;
+
+      let linePower = 0;
+
+      if (groupName !== "Pendientes de asignar") {
+
+        linePower = lineFixtures.reduce(
+          (total, p) => total + (
+            typeof p.powerW === "number" &&
+            Number.isFinite(p.powerW)
+              ? p.powerW
+              : 0
+          ),
+          0
+        );
+
+        const availablePower = capacity - linePower;
+
+        const loadPercentage = capacity > 0
+          ? (linePower / capacity) * 100
+          : 0;
+
+        const status = linePower > capacity
+          ? "SOBRECARGA"
+          : "CORRECTA";
+
+        doc.autoTable({
+          startY: currentY,
+          margin: {
+            left: margin,
+            right: margin
+          },
+          head: [[
+            "Consumo total",
+            "Capacidad útil",
+            "Disponible",
+            "Carga",
+            "Estado"
+          ]],
+          body: [[
+            linePower.toLocaleString("es-ES") + " W",
+            capacity.toLocaleString("es-ES") + " W",
+            availablePower.toLocaleString("es-ES") + " W",
+            loadPercentage.toFixed(0) + " %",
+            status
+          ]],
+          theme: "grid",
+          styles: {
+            fontSize: 8,
+            cellPadding: 2
+          },
+          headStyles: {
+            fillColor: dark,
+            textColor: [255, 255, 255]
+          },
+          didParseCell: function(data) {
+
+            if (
+              data.section === "body" &&
+              data.column.index === 4 &&
+              status === "SOBRECARGA"
+            ) {
+              data.cell.styles.textColor = red;
+              data.cell.styles.fontStyle = "bold";
+            }
+
+          }
+        });
+
+        currentY = doc.lastAutoTable.finalY + 2;
+
+      } else {
+
+        doc.setFont("helvetica", "italic");
+        doc.setFontSize(8);
+        doc.setTextColor(...grey);
+
+        doc.text(
+          "Aparatos pendientes de asignar a una línea Schuko",
+          margin,
+          currentY + 2
+        );
+
+        currentY += 6;
+
+      }
+
+      // LISTADO DE APARATOS
+
+      const fixtureRows = lineFixtures.map(p => [
+
+        p.brand || "",
+        p.name,
+        p.number,
+        typeof p.powerW === "number" &&
+        Number.isFinite(p.powerW)
+          ? p.powerW.toLocaleString("es-ES") + " W"
+          : "Sin consumo"
+
+      ]);
+
+      doc.autoTable({
+        startY: currentY,
+        margin: {
+          left: margin,
+          right: margin
+        },
+        head: [[
+          "Fabricante",
+          "Aparato",
+          "Número",
+          "Consumo"
+        ]],
+        body: fixtureRows,
+        theme: "grid",
+        styles: {
+          fontSize: 8,
+          cellPadding: 2,
+          textColor: [45, 50, 60]
+        },
+        headStyles: {
+          fillColor: [225, 231, 238],
+          textColor: [40, 48, 60],
+          fontStyle: "bold"
+        },
+        alternateRowStyles: {
+          fillColor: [247, 248, 250]
+        },
+        columnStyles: {
+          0: { cellWidth: 45 },
+          1: { cellWidth: 65 },
+          2: { cellWidth: 25 },
+          3: { cellWidth: 35 }
+        }
+      });
+
+      currentY = doc.lastAutoTable.finalY + 7;
+
+    });
+
+    currentY += 5;
+
+  });
+
+  // ========================================
+  // NUMERACIÓN DE PÁGINAS
+  // ========================================
+
+  const totalPages = doc.internal.getNumberOfPages();
+
+  for (let i = 1; i <= totalPages; i++) {
+
+    doc.setPage(i);
+
+    doc.setDrawColor(215, 220, 226);
+    doc.line(
+      margin,
+      pageHeight - 12,
+      pageWidth - margin,
+      pageHeight - 12
+    );
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(...grey);
+
+    doc.text(
+      "DMX Tools",
+      margin,
+      pageHeight - 7
+    );
+
+    doc.text(
+      "Página " + i + " de " + totalPages,
+      pageWidth - margin,
+      pageHeight - 7,
+      { align: "right" }
+    );
+
+  }
+
+
+  // ========================================
+  // DESCARGAR PDF CON PATCH Y BIBLIOTECA
+  // ========================================
+
+  try {
+
+    // Preparar los dos archivos JSON
+
+    const patchData = buildPatchExportData();
+    const libraryData = buildLibraryExportData();
+
+    const patchJson = JSON.stringify(patchData, null, 2);
+    const libraryJson = JSON.stringify(libraryData, null, 2);
+
+    // Comprobar que pdf-lib está disponible
+
+    if (!window.PDFLib || !window.PDFLib.PDFDocument) {
+      throw new Error("No se ha podido cargar pdf-lib.");
+    }
+
+    // Convertir el PDF generado por jsPDF
+
+    const pdfBytes = doc.output("arraybuffer");
+
+    const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes);
+
+    // Adjuntar el patch JSON
+
+    await pdfDoc.attach(
+      new TextEncoder().encode(patchJson),
+      "DMX_Patch.json",
+      {
+        mimeType: "application/json",
+        description: "Patch DMX y configuración eléctrica",
+        creationDate: new Date(),
+        modificationDate: new Date()
+      }
+    );
+
+    // Adjuntar la biblioteca JSON
+
+    await pdfDoc.attach(
+      new TextEncoder().encode(libraryJson),
+      "DMX_Library.json",
+      {
+        mimeType: "application/json",
+        description: "Biblioteca de aparatos utilizada en este patch",
+        creationDate: new Date(),
+        modificationDate: new Date()
+      }
+    );
+
+    // Generar el PDF definitivo
+
+    const finalPdfBytes = await pdfDoc.save();
+
+    const pdfBlob = new Blob(
+      [finalPdfBytes],
+      { type: "application/pdf" }
+    );
+
+    const pdfUrl = URL.createObjectURL(pdfBlob);
+
+    const link = document.createElement("a");
+
+link.href = pdfUrl;
+
+const safeProjectName = getProjectTitle()
+  .replace(/[<>:"/\\|?*\x00-\x1F]/g, "")
+  .replace(/\s+/g, "_");
+
+link.download = safeProjectName + ".pdf"; 
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(pdfUrl), 1000);
+
+    message(
+      "exportMessage",
+      "PDF exportado correctamente con el patch y la biblioteca adjuntos."
+    );
+
+  } catch (error) {
+
+    console.error("Error al generar el PDF:", error);
+
+    message(
+      "exportMessage",
+      "Error al generar el PDF con los archivos JSON adjuntos.",
+      false
+    );
+
+  }
+
+}
+ 
+// ========================================  
+// BORRAR PATCH  
+// ========================================  
+  
+function clearPatch() {  
+  if(patches.length===0) {  
+    message("exportMessage","El patch ya está vacío.",false);  
+    return;  
+  }  
+  
+  if(!confirm("¿Seguro que quieres borrar todo el patch?")) return;  
+  
+  patches=[];  
+  saveData();  
+  renderPatch();  
+  
+  message("exportMessage","Patch borrado correctamente.");  
+}  
+  
+// ========================================  
+// INICIAR  
+// ========================================  
+  
+renderLibrary();  
+renderPatch();  
+renderProjectInfo();
+  
+</script>
+<script>
+if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./service-worker.js").catch(err => console.warn("No se pudo registrar el modo instalable:", err))); }
+</script>  </body>  
+</html>

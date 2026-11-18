@@ -1,0 +1,18 @@
+# Rubenca DMX Tools — paquete para Cloudflare Pages
+
+## Publicación sencilla
+1. Entra en https://dash.cloudflare.com/ y accede a tu cuenta.
+2. Abre **Workers & Pages** → **Create** → **Pages** → **Upload assets** (el nombre puede variar ligeramente).
+3. Crea un proyecto, por ejemplo `rubenca-dmx-tools`.
+4. Sube el contenido de esta carpeta (no el ZIP comprimido): `index.html`, `manifest.webmanifest`, `service-worker.js` y la carpeta `assets`.
+5. Pulsa **Deploy**. Cloudflare te dará una dirección `*.pages.dev` para compartir.
+
+## Importante
+- Este paquete es una primera versión de publicación basada en el HTML facilitado. No se han cambiado las funciones internas del patch ni la biblioteca.
+- Los datos se guardan en el navegador/dispositivo de cada usuario. No se sincronizan entre amigos. Para compartir un proyecto, utilizad las opciones de exportar/importar que ya tiene la aplicación.
+- Las cuatro librerías PDF siguen cargándose desde sus CDNs originales. El Service Worker intenta guardarlas después de la primera carga online para visitas posteriores sin conexión, pero no se debe dar por garantizado el uso offline de PDF hasta probarlo en los dispositivos.
+- El primer acceso debe hacerse con Internet. La instalación PWA requiere HTTPS, que Cloudflare Pages proporciona en el dominio `pages.dev`.
+- Antes de repartir el enlace, prueba creación de aparatos, patch, guardado, exportación/importación JSON y exportación/recuperación PDF.
+
+## Actualizar
+Cuando haya una nueva versión, sustituye los archivos en el proyecto de Pages y vuelve a desplegar.
